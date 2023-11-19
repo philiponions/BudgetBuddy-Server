@@ -20,10 +20,10 @@ def store_post():
         # Establish the connection and insert into database
         conn = get_db_connection()
 
-        # count = conn.execute(
-        #     'SELECT COUNT(*) FROM stores WHERE username = ?;', (user_name,)).fetchall()
-        # if count[0][0] != 1:
-        #     return "Invalid"
+        count = conn.execute(
+            'SELECT COUNT(*) FROM users WHERE username = ?;', (user_name,)).fetchall()
+        if count[0][0] != 1:
+            return "Invalid"
 
         # See if the store already exists
         count = conn.execute(
@@ -57,6 +57,33 @@ def store_post():
     except Exception as e:
         print(e)
         data = str(e)
+    return data
+
+
+# Route to get store
+@bp.route('/<user_name>', methods=["GET"])
+def get_stores(user_name):
+    data = ""
+    try:
+        # Establish the connection and insert into database
+        conn = get_db_connection()
+
+        query = "SELECT * FROM stores WHERE username = ?"
+
+        data = conn.execute(query, (user_name, )).fetchall()
+        data =  json.dumps([dict(i) for i in data])
+        conn.commit()
+        conn.close()
+
+        # if data[0][0] == 1:
+        #     data = "Store found "
+        # elif data[0][0] == 0:
+        #     data = "No stores"
+
+    except Exception as e:
+        print(e)
+        data = str(e)
+
     return data
 
 
