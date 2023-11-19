@@ -15,6 +15,7 @@ def store_post():
         data = request.get_json()
         user_name = data["username"]
         store_name = data["name"]
+        items = data["items"]
         data = store_name
 
         # Establish the connection and insert into database
@@ -47,6 +48,31 @@ def store_post():
             query = "INSERT INTO stores (store_id, name, username) VALUES (?,?,?)"
 
             conn.execute(query, (store_id, store_name, user_name))
+            
+            
+
+            for data in items:
+                query = "INSERT INTO items (item_id, item_name, store_id) VALUES (?,?,?)"
+
+                # Generate random store id
+                is_valid_number = False
+                while not is_valid_number:
+                    item_id = randint(1, 10000)
+                    try:
+                        count = conn.execute(
+                            'SELECT COUNT(*) FROM items where item_id = ? and store_id = ?;', (item_id, store_id,)).fetchall()
+                        
+                    except Exception as e:
+                        print("here")
+                        print(e)
+                        return e
+                    # Check if the store_id already exists
+                    if count[0][0] == 0:
+                        is_valid_number = True
+                        break
+
+                conn.execute(query, (item_id, data["item_name"], store_id))
+            
             conn.commit()
             conn.close()
 
