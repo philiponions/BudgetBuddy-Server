@@ -163,11 +163,15 @@ def store_delete():
         if count[0][0] == 1:
                 query = "DELETE FROM stores WHERE username = ? and store_id = ?"
                 conn.execute(query, (user_name, store_id))
+                conn.commit()
+                query = "DELETE FROM items WHERE store_id = ?"
+                conn.execute(query, (store_id,))
                 data = "Successfully deleted store with ID " + str(store_id)
         else:
             data = "Store does not exist"
         conn.commit()
         conn.close()
     except Exception as e:
+        print(e)
         data = "An error occurred while deleting a store."
     return data

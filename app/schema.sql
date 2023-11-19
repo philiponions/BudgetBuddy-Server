@@ -15,11 +15,10 @@ create table stores (
     primary key (store_id),
     foreign key (username) references users
 );
-create table items(
-    item_id      int,
-    item_name   text,
-    store_id     int, 
-    primary key (item_id),
-    foreign key (store_id) references stores
+CREATE TABLE items(
+    item_id      INTEGER PRIMARY KEY,
+    item_name    TEXT,
+    store_id     INTEGER, 
+    FOREIGN KEY (store_id) REFERENCES stores ON DELETE CASCADE
 );
 
