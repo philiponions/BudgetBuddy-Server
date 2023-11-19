@@ -13,8 +13,7 @@ def items_post():
     try:
         # Retrieve data from the request's JSON body
         data = request.get_json()
-        item_name = data["item_name"]
-        store_name = data["name"]
+        item_name = data["item_name"]        
         store_id = data["store_id"]
 
         # Establish the connection and insert into database
@@ -41,7 +40,7 @@ def items_post():
             conn.commit()
             conn.close()
 
-            data = "Inserted item successfully " + item_name + " " + store_name
+            data = "Inserted item successfully " + item_name + " " 
         except Exception as e:
             data = "Failed to insert item" + str(e)
 
@@ -61,14 +60,15 @@ def item_get(store_id):
         # Establish the connection and insert into database
         conn = get_db_connection()
 
-        query = "SELECT item_name FROM items WHERE store_id = ?"
+        query = "SELECT * FROM items WHERE store_id = ?"
 
         data = conn.execute(query, (store_id,)).fetchall()
         conn.commit()
         conn.close()
         if data and len(data) > 0:
             # Extract item names from the fetched data
-            item_names = [item[0] for item in data]
+            item_names = [dict(item) for item in data]
+            print(item_names)
             response = jsonify(item_names=item_names)
             # Set content type to JSON
             response.headers['Content-Type'] = 'application/json'
