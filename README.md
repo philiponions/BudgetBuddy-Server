@@ -1,1 +1,1 @@
-# BudgetBuddy-Server
+# PurchasePal-Server
