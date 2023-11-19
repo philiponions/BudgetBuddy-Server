@@ -20,10 +20,10 @@ def store_post():
         # Establish the connection and insert into database
         conn = get_db_connection()
 
-        count = conn.execute(
-            'SELECT COUNT(*) FROM stores WHERE username = ?;', (user_name,)).fetchall()
-        if count[0][0] != 1:
-            return "Invalid"
+        # count = conn.execute(
+        #     'SELECT COUNT(*) FROM stores WHERE username = ?;', (user_name,)).fetchall()
+        # if count[0][0] != 1:
+        #     return "Invalid"
 
         # See if the store already exists
         count = conn.execute(
@@ -89,4 +89,32 @@ def store_get():
     except Exception as e:
         print(e)
         data = str(e)
+    return data
+
+# Delete a store
+@bp.route('/', methods=["DELETE"])
+def store_delete():
+    data = ""
+    try:
+        # Retrieve data from the request's JSON body
+        data = request.get_json()
+        user_name = data["username"]
+        store_id = data["store_id"]
+
+        # Establish the connection
+        conn = get_db_connection()
+        
+        # See if the store id exists and matches the user's id
+        query = "SELECT COUNT(*) FROM stores WHERE username = ? and store_id = ?"
+        count = conn.execute(query, (user_name, store_id)).fetchall()
+        if count[0][0] == 1:
+                query = "DELETE FROM stores WHERE username = ? and store_id = ?"
+                conn.execute(query, (user_name, store_id))
+                data = "Successfully deleted store with ID " + str(store_id)
+        else:
+            data = "Store does not exist"
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        data = "An error occurred while deleting a store."
     return data
