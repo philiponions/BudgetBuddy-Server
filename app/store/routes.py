@@ -119,24 +119,19 @@ def store_get():
     return data
 
 # Delete a store
-@bp.route('/', methods=["DELETE"])
-def store_delete():
+@bp.route('/<store_id>/<username>', methods=["DELETE"])
+def store_delete(store_id, username):
     data = ""
     try:
-        # Retrieve data from the request's JSON body
-        data = request.get_json()
-        user_name = data["username"]
-        store_id = data["store_id"]
-
         # Establish the connection
         conn = get_db_connection()
         
         # See if the store id exists and matches the user's id
         query = "SELECT COUNT(*) FROM stores WHERE username = ? and store_id = ?"
-        count = conn.execute(query, (user_name, store_id)).fetchall()
+        count = conn.execute(query, (username, store_id)).fetchall()
         if count[0][0] == 1:
                 query = "DELETE FROM stores WHERE username = ? and store_id = ?"
-                conn.execute(query, (user_name, store_id))
+                conn.execute(query, (username, store_id))
                 conn.commit()
                 query = "DELETE FROM items WHERE store_id = ?"
                 conn.execute(query, (store_id,))
